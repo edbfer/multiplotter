@@ -36,6 +36,8 @@ struct graphinfo{
   int len;
   int color = kBlack;
   bool toFit = false;
+  bool logx = false;
+  bool logy = false;
 };
 
 void printHelp()
@@ -190,24 +192,6 @@ int main(int argc, char** argv)
             return 1;
           }
         }
-        /*else if (it->compare("Title:") == 0)
-        {
-          if(inGraph){
-            string op = *(it+1);
-            if (op.compare("") == 0)
-            {
-              cout << "ERROR: Malformed Title Directive" << endl;
-              big_list[nlist].title = "Graph" + to_string(nlist);
-            } else
-            {
-              big_list[nlist].title = op;
-            }
-          }
-          else
-          {
-            cout << "Title directive outside of graph. Ignoring!" << endl;
-          }
-        }*/
         else if (it->compare("Length:") == 0)
         {
           if(inGraph){
@@ -230,6 +214,28 @@ int main(int argc, char** argv)
           else
           {
             cout << "Length directive outside of graph. Ignoring!" << endl;
+          }
+        }
+        else if (it->compare("SetLogX") == 0)
+        {
+          if(inGraph)
+          {
+            big_list[nlist-1].logx = true;
+          }
+          else
+          {
+            cout << "ERROR: Malformed Key Directive" << endl;
+          }
+        }
+        else if (it->compare("SetLogY") == 0)
+        {
+          if(inGraph)
+          {
+            big_list[nlist-1].logy = true;
+          }
+          else
+          {
+            cout << "ERROR: Malformed Key Directive" << endl;
           }
         }
         else if (it->compare("Key:") == 0)
@@ -389,10 +395,12 @@ int main(int argc, char** argv)
     {
       TCanvas* tc2 = new TCanvas();
       tc2->cd();
+      tc2->SetLogx(gi.logx);
+      tc2->SetLogy(gi.logy);
       gi.gr->Draw("AP");
       gi.gr->GetXaxis()->SetTitle(gi.xaxis.c_str());
       gi.gr->GetYaxis()->SetTitle(gi.yaxis.c_str());
-      tc2->Update();
+      //tc2->Update();
       tc2->SaveAs((outfilename + to_string(j) + ".png").c_str());
       tc2->SaveAs((outfilename + to_string(j) + ".eps").c_str());
       delete tc2;
@@ -402,6 +410,9 @@ int main(int argc, char** argv)
 
   if(!separate)
   {
+    tc->SetLogx(big_list[0].logx);
+    tc->SetLogy(big_list[0].logy);
+
     mg->SetTitle("Dist#hat{a}ncia ao centro no eixo dos detetores");
     mg->Draw("AP");
     mg->GetXaxis()->SetTitle("y [cm]");
